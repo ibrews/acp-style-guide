@@ -35,6 +35,26 @@ For a license that requires a copyright notice, use `Copyright (c) YEAR Alex Cou
 Product names, individual contributors, and external licensors retain their accurate names; this
 rule does not rewrite an external API, license, or a person's byline.
 
+## Support
+
+Repos that are real, standalone products or tools — not scratch repos, demos, forks of someone
+else's project, or internal-only tooling — end with a one-line donation nudge directly above the
+Credits block, pointing at the same Stripe-backed flow used sitewide on alexcoulombepresents.com:
+
+```md
+## Support
+
+If you like seeing this kind of thing get built and shared, [donations are always welcome](https://www.alexcoulombepresents.com/support) — they buy hardware, render time, and the freedom to keep giving most of this away.
+
+## Credits
+
+Built by **Alex Coulombe Presents** ([ibrews](https://github.com/ibrews)).
+```
+
+Skip it on scratch/test repos, demo/sample projects, forks, and anything under the `agilelens`
+org — donations are a personal-brand ask, not a studio one, and a fork shouldn't solicit money on
+someone else's work.
+
 ## README order
 
 Root READMEs use this order when each section is relevant:
@@ -48,7 +68,8 @@ Root READMEs use this order when each section is relevant:
 6. `## Things to Try`.
 7. Status, known limitations, lineage, and related/shared work.
 8. License / commercial terms.
-9. `## Credits` using the block above.
+9. `## Support`, on real standalone products only (see above).
+10. `## Credits` using the block above.
 
 Do not add empty headings to satisfy the template. A focused plugin README can omit architecture
 or lineage; a research repository can put the private-R&D boundary directly under the summary.
@@ -125,6 +146,9 @@ does not substantiate, or mention internal tooling that is not a shipped depende
 4. **Point a new repo at this guide** — add a line like `Docs written to
    [Alex Coulombe Presents house style](https://github.com/ibrews/acp-style-guide).` to a new
    product's `CONTRIBUTING.md` or docs index rather than forking this content.
+5. **Check a repo's Support section** — for a real standalone product repo (not scratch, demo,
+   fork, or internal-only), confirm it has the `## Support` block directly above Credits, linking
+   to https://www.alexcoulombepresents.com/support. Skip this check for `agilelens`-org repos.
 
 ## Adoption
 
