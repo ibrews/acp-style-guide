@@ -3,7 +3,9 @@
 The shared house style for every repository published by [Alex Coulombe
 Presents](https://github.com/ibrews) — UnRealityKit, UnrealRenderManBridge, Forage, and
 everything after them. It makes the practices already visible in those repos repeatable; it is
-not a new marketing voice, and it is not owned by any one product.
+not a new marketing voice, and it is not owned by any one product. Covers written conventions
+(attribution, README structure, voice) and, as of 2026-08-10, the one shared visual brand mark
+(`branding/`) and how to bring it into a new tool — Unreal plugin or otherwise.
 
 **Source pattern.** UnRealityKit's README and roadmap lead with a concrete architecture, runnable
 paths, measured evidence, dates, and open gates. UnrealRenderManBridge uses the same pattern for
@@ -133,6 +135,73 @@ Unreal's Python, Remote Control, and USD Importer plugins.
 Do not turn a listing description into a changelog, make performance or compatibility claims it
 does not substantiate, or mention internal tooling that is not a shipped dependency.
 
+## Visual identity
+
+There is one ACP brand mark — a marquee sign with a spark, in a fixed gradient — and it is
+square/compact by design so it survives being shrunk to a 16px menu row. Products do not design
+their own icon; they take this one.
+
+**The mark.** Rounded-square dark chip (`#07070f`), a lighter inset panel with a row of small dot
+"bulbs," and a horizontal gradient pill through the center holding a four-point spark. Gradient,
+left to right: `#2dd4bf` (teal) → `#a78bfa` (purple) → `#fbbf24` (amber). Canonical source: the
+live favicon at [alexcoulombepresents.com](https://www.alexcoulombepresents.com) (`app/icon.svg`
+in the `alexcoulombepresents` site repo) — that is the actual production mark, not a proposal.
+This repo mirrors it so every product has one public, always-reachable copy to build from, whether
+or not the site repo itself is reachable from wherever a given tool is being built:
+
+```
+branding/icon.svg           Source vector — regenerate any size from this, don't re-derive the design.
+branding/ACPIcon_16.png     Menu-row icon size.
+branding/ACPIcon_20.png     Small toolbar icon size.
+branding/ACPIcon_40.png     Standard toolbar button size.
+branding/ACPIcon_64.png     Mid-size UI icon.
+branding/ACPIcon_128.png    Plugin-listing / large-UI icon size.
+branding/ACPIcon_256.png    App-icon intermediate size.
+branding/ACPIcon_512.png    App-icon intermediate size.
+branding/ACPIcon_1024.png   App Store / largest app-icon size.
+```
+
+**Usage rules.**
+- Never hand-scale a small PNG up — regenerate from `icon.svg` at the exact size needed
+  (`rsvg-convert -w N -h N branding/icon.svg -o out.png`, or an equivalent SVG renderer).
+- Never recolor the gradient, redraw the mark, or add a wordmark variant without checking with
+  Alex first — this is the one house mark, the same way there is one Attribution rule above.
+- A product-specific icon (e.g. a distinct app icon for a standalone macOS/iOS app) is a real,
+  separate design decision, not something to improvise from this mark — raise it explicitly rather
+  than silently diverging.
+
+**Onboarding a new tool — pick the lane that matches what you're building:**
+
+1. **Unreal Engine plugin.** Follow `acp-dist-tools`' own README, "Onboarding a new plugin" and
+   "The shared ACP toolbar/menu launcher" sections (`/Users/Shared/GH/acp-dist-tools`, local-only,
+   never pushed — ask Alex for access if you don't have this checkout). That repo is the full
+   technical integration: ACPL2 licensing, background update-checks, and — as of 2026-08-10 — a
+   shared "Alex Coulombe Presents" toolbar/menu entry point that lists every installed ACP plugin
+   in one place instead of N unrelated per-plugin menus (`native/ACPMenu.h`/`.cpp` for compiled
+   plugins, `python/acp_menu.py` for content-only ones). Its own `sync_dist_tools.sh` vendors the
+   icon PNGs above into the plugin's `Resources/` folder as part of that same onboarding step —
+   don't copy them by hand into a UE plugin; let the sync script do it so the provenance stamp
+   stays accurate.
+2. **Anything else — CLI, web app, editor/IDE extension, mobile app, desktop app.** There is no
+   shared vendoring script for non-UE tools yet; do this by hand:
+   - Pull the icon from `branding/` above at whatever size(s) your platform needs (app icon,
+     favicon, tray icon, etc.) — regenerate from `icon.svg`, don't reuse a UE-sized PNG for an
+     unrelated context without checking it still reads clearly at the new size.
+   - Apply this guide's Attribution, README order, and Voice sections the same as any other ibrews
+     repo — those rules are not UE-specific.
+   - If the tool has its own "about"/settings surface, a version-with-support-link mention (in the
+     spirit of `acp_update_check.py`'s background update-check, even without adopting the full
+     ACPL2 machinery) keeps the experience consistent with the UE plugins' — optional, not
+     required, for a non-UE tool.
+   - **If the tool wants ACPL2-style paid licensing** (tiers, trials, per-recipient license
+     files): that's a real gap today — `acp-dist-tools`' checker templates are Python and native
+     C++ only, tied to how the UE plugins ship. A CLI in Node/TypeScript or a Swift Mac app needs
+     its own checker implementing the same `ACPL2|product|licensee|email|tier|seats|expiry|
+     signature` format and HMAC-SHA256 signature scheme (see `acp-dist-tools/README.md`'s "The
+     ACPL2 license format" and "Checker contract" sections for the exact contract to port), not a
+     direct vendor of the existing templates. Flag this to whoever's extending `acp-dist-tools`
+     rather than inventing a parallel licensing scheme per product.
+
 ## Things to Try
 
 1. **Check a repo's attribution** — `grep -rn "Alex Coulombe" <repo> | grep -v "Alex Coulombe Presents"`
@@ -149,6 +218,14 @@ does not substantiate, or mention internal tooling that is not a shipped depende
 5. **Check a repo's Support section** — for a real standalone product repo (not scratch, demo,
    fork, or internal-only), confirm it has the `## Support` block directly above Credits, linking
    to https://www.alexcoulombepresents.com/support. Skip this check for `agilelens`-org repos.
+6. **Regenerate an icon size and eyeball it small** — `rsvg-convert -w 16 -h 16 branding/icon.svg
+   -o /tmp/acp16.png`, then open it at 100%. If the mark reads as a muddy blob rather than a
+   recognizable dark chip with a bright center, something about the target context (a busy toolbar,
+   a dark-on-dark theme) needs a different size from this list, not a redrawn mark.
+7. **Diff a vendored icon against the canonical one** — for any product that copied `branding/`
+   into its own repo (rather than depending on `acp-dist-tools`' sync script to do it), confirm its
+   copy is byte-identical: `shasum branding/ACPIcon_128.png` here vs. the same command in the
+   product repo. A silent divergence means someone hand-edited or regenerated it differently.
 
 ## Adoption
 
